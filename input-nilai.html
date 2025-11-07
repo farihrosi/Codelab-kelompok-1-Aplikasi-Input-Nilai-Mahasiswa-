@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Nilai Mahasiswa</title>
+  <link rel="stylesheet" href="css/form-input.css">
+</head>
+<body>
+  <h1>Form Input Nilai Mahasiswa</h1>
+
+  <form id="formNilai">
+    <input type="text" id="nama" placeholder="Nama Lengkap" required>
+    <input type="text" id="nim" placeholder="701230101" required>
+    <input type="text" id="matkul" placeholder="Mata Kuliah" required>
+    <input type="number" id="nilai" placeholder="100" required>
+    <button type="submit">Simpan</button>
+  </form>
+
+
+  <p><a href="index.html">← Kembali ke Halaman Beranda</a></p>
+  <p><a href="lihat-data-mahasiswa.html">Lihat Data Mahasiswa →</a></p>
+
+  <script type="module">
+  import { db } from "./firebase-config.js";
+  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+  const form = document.getElementById("formNilai");
+  const nilaiRef = collection(db, "nilaiMahasiswa");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nama = form.nama.value.trim();
+    const nim = form.nim.value.trim();
+    const matkul = form.matkul.value.trim();
+    const nilai = form.nilai.value.trim();
+
+    if (nama && nim && matkul && nilai) {
+      try {
+        await addDoc(nilaiRef, { nama, nim, matkul, nilai });
+
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Data mahasiswa berhasil disimpan!",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 2000,
+          timerProgressBar: true,
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          }
+        });
+
+        form.reset();
+      } catch (error) {
+        Swal.fire({
+          title: "Gagal!",
+          text: "Terjadi kesalahan saat menyimpan data.",
+          icon: "error",
+          confirmButtonText: "Coba Lagi"
+        });
+      }
+    } else {
+      Swal.fire({
+        title: "Peringatan!",
+        text: "Harap isi semua field terlebih dahulu!",
+        icon: "warning",
+        confirmButtonText: "OK"
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
